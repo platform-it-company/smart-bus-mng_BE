@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  resources/egovframework/mappers/CommonApiMapper.xml -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.smartbusmng.mapper.CommonApiMapper">
+
+	<!--  추후 sbm_ms_veh, sbm_pr_veh_lc가 완성이 되면 그것으로 변경해야 함 -->
+	<select id="getInitRouteList" resultType="egovframework.smartbusmng.model.common.record.InitRouteListItem">
+<!--		SELECT
+			D.route_id AS routeId, D.route_nm AS routeNm, D.route_ver AS routeVer, D.bms_route_dc AS routeDc
+		FROM
+			smartbusmngdb.sbm_facility A
+			JOIN busroutedb.bms_pr_veh_lc B ON A.veh_id = B.veh_id
+			JOIN busroutedb.bms_ms_veh C ON A.veh_id = C.veh_id
+			left JOIN busroutedb.matched_ms_route D ON B.route_id = D.bms_route_id
+		WHERE A.group_id = #{userGroupId} -->
+	    SELECT DISTINCT
+	        D.route_id   AS routeId,
+	        D.route_nm   AS routeNm,
+	        D.route_ver  AS routeVer,
+	        D.bms_route_dc AS routeDc
+	    FROM
+	        smartbusmngdb.sbm_facility A
+	        JOIN busroutedb.bms_pr_veh_lc B
+	          ON A.veh_id = B.veh_id
+	        JOIN busroutedb.ms_veh C
+	          ON A.veh_id = C.veh_id
+	        LEFT JOIN busroutedb.matched_ms_route D
+	          ON B.route_id = D.bms_route_id
+	    WHERE
+	        A.group_id = #{userGroupId}
+	        AND D.route_id IS NOT NULL   <!-- null 노선 제거 -->
+	    ORDER BY
+	        D.route_nm,
+	        D.bms_route_dc
+	</select>
+	
+	<select id="getInitVehList" resultType="egovframework.smartbusmng.model.common.record.InitVehListItem">
+		SELECT veh_id, veh_no
+		FROM busroutedb.ms_veh
+		WHERE group_id = #{userGroupId}
+	</select>
+	
+	<select id="getInitStopList" resultType="egovframework.smartbusmng.model.common.record.InitStopListItem">
+		SELECT sttn_id as sttnId,
+			sttn_nm as sttnNm,
+			sttn_no as sttnNo
+		FROM busroutedb.ms_sttn
+	</select>
+	
+	<select id="selectMakerModelRows" resultType="egovframework.smartbusmng.model.common.record.MakerModelRow">
+		select distinct
+			maker_nm as makerNm,
+			model_nm as modelNm
+		from busroutedb.ms_veh
+		<where>
+	        maker_nm IS NOT NULL AND maker_nm &lt;&gt; ''
+	        AND model_nm IS NOT NULL AND model_nm &lt;&gt; ''
+			<if test="userGroupId != null and userGroupId != ''">
+				AND group_id = #{userGroupId}
+			</if>
+		</where>
+		ORDER BY maker_nm, model_nm
+	</select>
+	
+</mapper>

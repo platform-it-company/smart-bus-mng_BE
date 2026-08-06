@@ -1,0 +1,35 @@
+services:
+  smartbusmng:
+    build: .
+    container_name: smartbusmng
+    restart: unless-stopped
+
+    env_file:
+      - ../env/common.env
+      - ../env/smartbusmng.env
+
+    environment:
+      SPRING_PROPERTIES_ACTIVE: docker
+      
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - ./logs:/app/logs
+      - ./src/main/resources/logback-spring.xml:/app/logback-spring.xml:ro
+
+    entrypoint:
+      [
+        "java",
+        "-Duser.timezone=Asia/Seoul",
+        "-Dlogging.config=/app/logback-spring.xml",
+        "-jar",
+        "/app/app.jar"
+      ]
+
+    networks:
+      - rovi-net
+
+networks:
+  rovi-net:
+    external: true

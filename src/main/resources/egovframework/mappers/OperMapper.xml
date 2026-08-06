@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  resources/egovframework/mappers/OperMapper.xml -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.smartbusmng.mapper.OperMapper">
+
+	<!-- 전체 -->
+	<select id="countAllRoutes" resultType="long">
+		select count(*) 
+		from busroutedb.ms_route
+	</select>
+	
+	<!-- routeTp 목록 -->
+	<select id="selectRouteTpList" resultType="string">
+		select distinct route_tp
+		from busroutedb.ms_route
+		where route_tp is not null and route_tp != ''
+		order by route_tp
+	</select>
+	
+	<!-- 노선 목록 -->
+	<select id="selectRouteList" resultType="egovframework.smartbusmng.model.oper.RouteSimpleDto">
+		select 
+			route_id as routeId,
+			route_nm as routeNm,
+			esttn_nm as esttnNm,
+			route_tp as routeTp
+		from busroutedb.ms_route
+		where 1=1
+		<if test="routeTp != null and routeTp != ''">
+			and route_tp = #{routeTp}
+		</if>
+		order by route_nm, route_id
+	</select>
+	
+	<!-- routeTp별 카운트 -->
+	<select id="selectRouteTpCounts" resultType="egovframework.smartbusmng.model.oper.RouteTpCountDto">
+		select
+			coalesce(route_tp, '(미분류)') as routeTp,
+			count(*) as cnt
+		from busroutedb.ms_route
+		group by coalesce(route_tp, '(미분류)')
+		order by cnt DESC
+	</select>
+	
+	<!-- 검색 카운트 -->
+	<select id="countRoutesByCond" resultType="long">
+		select count(*)
+		from busroutedb.ms_route
+		where 1=1
+		<if test="routeId != null and routeId != ''">
+			and route_id = #{routeId}
+		</if>
+		<if test="routeTp != null and routeTp != ''">
+			and route_tp = #{routeTp}
+		</if>
+	</select>
+	
+	<!-- 검색 리스트 -->
+	<select id="selectRoutesByCond" resultType="egovframework.smartbusmng.model.oper.RouteRowDto">
+		select
+			route_id as routeId, 
+			route_ver as routeVer,
+			route_nm as routeNm,
+			route_tp as routeTp,
+			fircar_tm as fircarTm,
+			lstcar_tm as lstcarTm,
+			caralc,
+			fircar_tm_s as fircarTmS,
+			lstcar_tm_s as lstcarTmS,
+			caralc_s as caralcS,
+			fircar_tm_h as fircarTmH,
+			lstcar_tm_h as lstcarTmH,
+			caralc_h as caralcH,
+			ssttn_nm as ssttnNm,
+			esttn_nm as esttnNm,
+			use_at as useAt
+		from busroutedb.ms_route
+		where 1=1
+		<if test="routeId != null and routeId != ''">
+			and route_id = #{routeId}
+		</if>
+		<if test="routeTp != null and routeTp != ''">
+			and route_tp = #{routeTp}
+		</if>
+		order by route_tp, route_nm, route_id
+		limit #{size} offset #{offset}
+	</select>
+	
+	<!--  사용여부 수정 -->
+	<update id="editDispatchInfo">
+		update busroutedb.ms_route
+		set use_at = #{useAt}
+		where route_id = #{routeId}
+	</update>
+	
+	<update id="updateRoute">
+		update busroutedb.ms_route
+		<set>
+			<if test="useAt != null">use_at = #{useAt},</if>
+			<if test="routeTp != null">route_tp = #{routeTp},</if>
+			<if test="fircarTm != null">fircar_tm = #{fircarTm},</if>
+			<if test="lstcarTm != null">lstcar_tm = #{lstcarTm},</if>
+			<if test="caralc != null">caralc = #{caralc},</if>
+			<if test="fircarTmS != null">fircar_tm_s = #{fircarTmS},</if>
+			<if test="lstcarTmS != null">lstcar_tm_s = #{lstcarTmS},</if>
+			<if test="caralcS != null">caralc_s = #{caralcS},</if>
+			<if test="fircarTmH != null">fircar_tm_h = #{fircarTmH},</if>
+			<if test="lstcarTmH != null">lstcar_tm_h = #{lstcarTmH},</if>
+			<if test="caralcH != null">caralc_h = #{caralcH},</if>
+		</set>
+		where route_id = #{routeId}
+	</update>
+	
+	<select id="selectRouteById" resultType="egovframework.smartbusmng.model.oper.RouteRowDto">
+		select
+			route_id as routeId,
+			route_ver as routeVer,
+			route_nm as routeNm,
+			route_tp as routeTp,
+			fircar_tm as fircarTm,
+			lstcar_tm as lstcarTm,
+			caralc,
+			fircar_tm_s as fircarTmS,
+			lstcar_tm_s as lstcarTmS,
+			caralc_s as caralcS,
+			fircar_tm_h as fircarTmH,
+			lstcar_tm_h as lstcarTmH,
+			caralc_h as caralcH,
+			ssttn_nm as ssttnNm,
+			esttn_nm as esttnNm,
+			use_at as useAt
+		from busroutedb.ms_route
+		where route_id = #{routeId}
+	</select>
+	
+	<select id="countVehicles" resultType="long">
+		select count(*)
+		from busroutedb.ms_veh
+		where 1=1
+			<if test="userRole != 'ADMIN'">
+				and group_id = #{groupId}
+			</if>
+	</select>
+	
+	<select id="selectVehNoList" resultType="egovframework.smartbusmng.model.common.record.InitVehListItem">
+		select
+			veh_id as vehId,
+			veh_no as vehNo
+		from busroutedb.ms_veh
+		where 1=1
+			<if test="userRole != 'ADMIN'">
+				and group_id = #{groupId} 
+			</if>
+		order by veh_no
+	</select>
+	
+	<select id="selectMakerList" resultType="string">
+		select distinct maker_nm
+		from busroutedb.ms_veh
+		where 1=1
+			<if test="userRole != 'ADMIN'">
+				and group_id = #{groupId} 
+			</if>	
+		order by maker_nm
+	</select>
+	
+	<select id="countVehiclesByCond" resultType="long">
+		select count(*)
+		from busroutedb.ms_veh
+		where 1=1
+			<if test="groupId != null and groupId != ''">
+				and group_id = #{groupId} 
+			</if>
+			<if test="vehId != null and vehId != 0">
+				and veh_id = #{vehId}
+			</if>
+			<if test="makerNm != null and makerNm != ''">
+				and maker_nm = #{makerNm}
+			</if>
+	</select>
+	
+	<select id="selectVehiclesByCond" resultType="egovframework.smartbusmng.model.oper.VehicleListRow">
+		select 
+			v.veh_id as vehId,
+			v.veh_no as vehNo,
+			v.group_id as groupId,
+			o.group_nm as groupNm,
+			v.vin,
+			v.maker_nm as makerNm,
+			v.model_nm as modelNm,
+			v.model_year as modelYear,
+			v.fuel_tp as fuelTp,
+			v.lowfloor_yn as lowfloorYn,
+			v.wheelchair_yn as wheelchairYn,
+			v.oprat_at as opratAt,
+			v.manager_nm as managerNm,
+			v.manager_phone as managerPhone
+		from busroutedb.ms_veh v
+		left join smartbusmngdb.sbm_operator o on o.group_id = v.group_id
+		where 1=1
+			<if test="groupId != null and groupId != ''">
+				and v.group_id = #{groupId} 
+			</if>
+			<if test="vehId != null and vehId != 0">
+				and v.veh_id = #{vehId}
+			</if>
+			<if test="makerNm != null and makerNm != ''">
+				and v.maker_nm = #{makerNm}
+			</if>
+			order by v.veh_no
+			limit #{size} offset #{offset}			
+	</select>
+	
+		<select id="selectVehicleById" resultType="egovframework.smartbusmng.model.oper.VehicleInfo">
+		select 
+			v.veh_id as vehId,
+			v.veh_no as vehNo,
+			v.group_id as groupId,
+			o.group_nm as groupNm,
+			v.vin,
+			v.maker_nm as makerNm,
+			v.model_nm as modelNm,
+			v.model_year as modelYear,
+			v.fuel_tp as fuelTp,
+			v.euro6_yn as euro6Yn,
+			v.lowfloor_yn as lowfloorYn,
+			v.wheelchair_yn as wheelchairYn,
+			v.passenger_cap as passengerCap,
+			v.junk_tp as junkTp,
+			v.oprat_at as opratAt,
+			v.oprat_tp as opratTp,
+			v.manager_nm as managerNm,
+			v.manager_phone as managerPhone,
+			v.remark
+		from busroutedb.ms_veh v
+		left join smartbusmngdb.sbm_operator o on o.group_id = v.group_id
+		where 1=1
+			<if test="groupId != null and groupId != ''">
+				and v.group_id = #{groupId} 
+			</if>
+			<if test="vehId != null">
+				and v.veh_id = #{vehId}
+			</if>
+	</select>
+	
+	<update id="incVehSeq">
+		update busroutedb.ms_veh_seq
+		set next_val = last_insert_id(next_val + 1)
+		where id = 1
+	</update>
+	
+	<select id="selectNewVehId" resultType="int">
+		select last_insert_id()
+	</select>
+	
+	<select id="countVehNoDup" resultType="long">
+		select count(*)
+		from busroutedb.ms_veh
+		where group_id = #{groupId}
+			and veh_no = #{vehNo}
+	</select>
+	
+	<insert id="insertVehicle" parameterType="egovframework.smartbusmng.model.oper.VehicleInfo">
+		insert into busroutedb.ms_veh (
+		    veh_id, veh_no, group_id,
+		    vin, maker_nm, model_nm, model_year,
+		    fuel_tp, euro6_yn, lowfloor_yn, wheelchair_yn,
+		    passenger_cap, junk_tp,
+		    oprat_at, oprat_tp,
+		    manager_nm, manager_phone,
+		    remark		
+		) values (
+		    #{vehId}, #{vehNo}, #{groupId},
+		    #{vin}, #{makerNm}, #{modelNm}, #{modelYear},
+		    #{fuelTp}, #{euro6Yn}, #{lowfloorYn}, #{wheelchairYn},
+		    #{passengerCap}, #{junkTp},
+		    #{opratAt}, #{opratTp},
+		    #{managerNm}, #{managerPhone},
+		    #{remark}		
+		)
+	</insert>
+	
+	<update id="updateVehicle" parameterType="egovframework.smartbusmng.model.oper.VehicleInfo">
+		update busroutedb.ms_veh
+		<set>
+			<if test="vehNo != null">veh_no = #{vehNo},</if>
+			<if test="vin != null">vin = #{vin},</if>
+			<if test="groupId != null">group_id = #{groupId},</if>
+			<if test="makerNm != null">maker_nm = #{makerNm},</if>
+			<if test="modelNm != null">model_nm = #{modelNm},</if>
+			<if test="modelYear != null">model_year = #{modelYear},</if>
+			
+			<if test="fuelTp != null">fuel_tp = #{fuelTp},</if>
+			<if test="euro6Yn != null">euro6_yn = #{euro6Yn},</if>
+			
+			<if test="lowfloorYn != null">lowfloor_yn = #{lowfloorYn},</if>
+			<if test="wheelchairYn != null">wheelchair_yn = #{wheelchairYn},</if>
+			
+			<if test="passengerCap != null">passenger_cap = #{passengerCap},</if>
+			<if test="junkTp != null">junk_tp = #{junkTp},</if>
+			
+			<if test="opratAt != null">oprat_at = #{opratAt},</if>
+			<if test="opratTp != null">oprat_tp = #{opratTp},</if>
+			
+			<if test="managerNm != null">manager_nm = #{managerNm},</if>
+			<if test="managerPhone != null">manager_phone = #{managerPhone},</if>
+			
+			<if test="remark != null">remark = #{remark},</if>
+			</set>
+		where veh_id = #{vehId}		
+	</update>
+	
+	<select id="countPendingList" resultType="long">
+		select count(*)
+		from smartbusmngdb.sbm_bus_drivers
+		where (accepted_yn is null or accepted_yn = 0) 
+			<if test="groupId != null and groupId != ''">
+				and group_id = #{groupId}
+			</if>
+			and status = 0
+	</select>
+	
+	<select id="selectPendingList" resultType="egovframework.smartbusmng.model.oper.DriverPendingRow">
+		select 
+			d.driver_id as driverId,
+			d.driver_name as driverName,
+			d.login_id as loginId,
+			d.phone, d.email,
+			d.group_id as groupId,
+			o.group_nm as groupNm,
+			d.status,
+			d.accepted_yn as acceptedYn
+		from smartbusmngdb.sbm_bus_drivers d
+		left join smartbusmngdb.sbm_operator o on o.group_id = d.group_id
+		where (d.accepted_yn is null or d.accepted_yn = 0) 
+			<if test="groupId != null and groupId != ''">
+				and d.group_id = #{groupId}
+			</if>
+			and d.status = 0
+	</select>
+	
+	<select id="countDriversByCond" resultType="long">
+		select count(*)
+		from smartbusmngdb.sbm_bus_drivers
+		<where>
+			accepted_yn is not null and accepted_yn != 0  
+			<if test="groupId != null and groupId != ''">
+				and group_id = #{groupId}
+			</if>
+			<if test="driverName != null and driverName != ''">
+				and driver_name like concat('%', #{driverName}, '%')
+			</if>
+			<if test="status != null">
+				and status = #{status}
+			</if>
+		</where>
+	</select>
+
+	<select id="selectDriversByCond" resultType="egovframework.smartbusmng.model.oper.DriverListRow">
+		select
+			d.driver_id as driverId,
+			d.driver_name as driverName,
+			d.login_id as loginId,
+			d.phone,
+			d.email,
+			d.group_id as groupId,
+			o.group_nm as groupNm,
+			d.status,
+			d.accepted_yn as acceptedYn,
+			d.veh_no as vehNo,
+			d.route_id as routeId,
+			d.route_nm as routeNm,
+			d.last_login_dt as lastLoginDt,
+			d.created_dt as createdDt,
+			d.accepted_dt as acceptedDt,
+			d.accepted_by as acceptedBy
+		from smartbusmngdb.sbm_bus_drivers d
+		left join smartbusmngdb.sbm_operator o on o.group_id = d.group_id
+		<where>
+			d.accepted_yn is not null and d.accepted_yn != 0  
+			<if test="groupId != null and groupId != ''">
+				and d.group_id = #{groupId}
+			</if>
+			<if test="driverName != null and driverName != ''">
+				and d.driver_name like concat('%', #{driverName}, '%')
+			</if>
+			<if test="status != null">
+				and d.status = #{status}
+			</if>
+		</where>
+		order by d.updated_dt desc
+		<!-- limit #{size} offset #{offset} -->
+	</select>
+		
+	<update id="reqApprove">
+		update smartbusmngdb.sbm_bus_drivers
+		set
+			accepted_yn = 1,
+			accepted_dt = now(),
+			accepted_by = #{writer},
+			status = 1,
+			last_status_changed_at = now(),
+			updated_dt = now(),
+			updated_by = #{writer},
+			updated_with = 'WEB'
+		where (accepted_yn is null or accepted_yn = 0)
+			and status = 0
+			<if test="groupId != null and groupId != ''">
+				and group_id = #{groupId} 
+			</if>
+			and driver_id in
+			<foreach collection="driverIds" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	</update>
+	
+	<select id="countLoginIdDup" resultType="int">
+		select count(*)
+		from smartbusmngdb.sbm_bus_drivers
+		where login_id = #{loginId}
+	</select>
+	
+	<select id="selectDriverById" resultType="egovframework.smartbusmng.model.oper.DriverInfo">
+		select 
+			d.driver_id as driverId,
+			d.login_id as loginId,
+			d.driver_name as driverName,
+			d.phone,
+			d.email,
+			d.group_id as groupId,
+			o.group_nm as groupNm,
+			d.status,
+			d.accepted_yn as acceptedYn,
+			d.veh_id as vehId,
+			d.veh_no as vehNo,
+			d.route_id as routeId,
+			d.route_nm as routeNm,
+			d.route_tp as routeTp,
+			d.last_login_dt as lastLoginDt,
+			d.created_dt as createdDt,
+			d.created_by as createdBy,
+			d.updated_dt as updatedDt,
+			d.updated_by as updatedBy,
+			d.accepted_dt as acceptedDt,
+			d.accepted_by as acceptedBy
+		from smartbusmngdb.sbm_bus_drivers d
+		left join smartbusmngdb.sbm_operator o on o.group_id = d.group_id
+		where 1=1
+			<if test="groupId != null and groupId != ''">
+				and d.group_id = #{groupId}
+			</if>
+			and d.driver_id = #{driverId}
+	</select>
+	
+	<insert id="insertDriver" parameterType="egovframework.smartbusmng.model.oper.DriverInfo">
+		insert into smartbusmngdb.sbm_bus_drivers (
+			login_id, password, driver_name, phone, email,
+			group_id, status, accepted_yn,
+			veh_id, veh_no, route_id, route_nm, route_tp,
+			created_dt, created_by, created_with,
+			updated_dt, updated_by, updated_with,
+			accepted_dt, accepted_by
+		) values (
+			#{loginId}, #{password}, #{driverName}, #{phone}, #{email},
+			#{groupId}, 1, 1,
+			#{vehId}, #{vehNo}, #{routeId}, #{routeNm}, #{routeTp},
+			now(), #{createdBy}, 'WEB',
+			now(), #{updatedBy}, 'WEB',
+			now(), #{acceptedBy}
+		)	
+	</insert>
+	
+	<select id="selectLastInsertId" resultType="int">
+		select last_insert_id()
+	</select>
+	
+	<update id="updateDriver" parameterType="egovframework.smartbusmng.model.oper.DriverInfo">
+		update smartbusmngdb.sbm_bus_drivers
+		<set>
+			<if test="driverName != null">driver_name = #{driverName},</if>
+			<if test="phone != null">phone = #{phone},</if>
+			<if test="email != null">email = #{email},</if>
+			
+			<if test="status != null">status = #{status},</if>
+			<if test="acceptedYn != null">accepted_yn = #{acceptedYn},</if>
+			
+			<if test="vehId != null">veh_id = #{vehId},</if>
+			<if test="vehNo != null">veh_no = #{vehNo},</if>
+			
+			<if test="routeId != null">route_id = #{routeId},</if>
+			<if test="routeNm != null">route_nm = #{routeNm},</if>
+			<if test="routeTp != null">route_tp = #{routeTp},</if>
+			
+			updated_dt = now(),
+			updated_by = #{updatedBy},
+			updated_with = 'WEB'	
+		</set>
+		where driver_id = #{driverId}
+	</update>
+	
+	<update id="softDeleteDrivers">
+		update smartbusmngdb.sbm_bus_drivers
+		set
+			status = 4,
+			last_status_changed_at = now(),
+			updated_dt = now(),
+			updated_by = #{writer},
+			updated_with = 'WEB'
+		where 1=1
+			<if test="groupId != null and groupId != ''">
+				and group_id = #{groupId}
+			</if>
+			and driver_id in
+			<foreach collection="driverIds" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	</update>
+</mapper>

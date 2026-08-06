@@ -1,0 +1,330 @@
+/* home.css 일부*/
+.abnormal, .control {
+    position: relative; /* 모달의 위치를 기준으로 잡기 위해 상대 위치 설정 */
+    display: inline-block;
+}
+
+.abnormal .modal{
+  display: none; /* 기본적으로 숨김 */
+  position: absolute; /* 모달 위치 설정 */
+  top: 100%; /* 부모 요소 아래에 배치 */
+  left: 50%;
+  margin-top: 1rem;
+  transform: translateX(-50%);
+  width: 200px; /* 모달창 너비 */
+  padding: 10px;
+  background-color: #fff; /* 모달 배경 */
+  border: 1px solid #ccc; /* 테두리 */
+  border-radius: 5px; /* 모서리 둥글게 */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 */
+  z-index: 10; /* 다른 요소 위로 표시 */
+}
+
+.abnormal:hover .modal, .control:hover .control-modal{
+  display: block; /* hover 상태에서 표시 */
+}
+
+.control-modal{
+    display: none; /* 기본적으로 숨김 */
+    position: absolute; /* 모달 위치 설정 */
+    top: 100%; /* 부모 요소 아래에 배치 */
+    left: 0%;
+    margin-top: 1rem;
+    transform: translateX(-58%);
+    width: 450px; /* 모달창 너비 */
+    padding: 10px;
+    background-color: #fff; /* 모달 배경 */
+    border: 1px solid #ccc; /* 테두리 */
+    border-radius: 5px; /* 모서리 둥글게 */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 */
+    z-index: 10; /* 다른 요소 위로 표시 */
+}
+
+section h1{
+    display: inline-block;
+    font-size: 50px;
+    text-decoration: underline;
+    margin-left: 1rem;
+}
+
+.system-status{
+    margin-left: 41.5rem; 
+}
+
+.normal, .abnormal, .control{
+    text-align: center;
+    margin-top: 3.125rem;
+    margin-left: 1rem;
+    display: inline-block;
+    width: 12rem;
+    height: 5rem;
+    border: solid 1px black;
+    border-radius: 10px;
+    box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.5);
+}
+
+.normal p, .abnormal p, .control p{
+    padding-top: 0.5rem;
+    font-size: 20pt;
+}
+
+.fail, .fault, .off, .re-booting, .system, .sos, .testing{
+    text-align: center;
+    display: inline-block;
+    width: 5rem;
+    height: 3rem;
+    border: solid 1px black;
+    border-radius: 10%;
+    font-size: 8pt;
+    font-weight: 200;
+}
+
+.fail p, .fault p, .off p, .re-booting p, .system p, .sos p, .testing p{
+    font-size: 15pt;
+    /* font-weight: 100; */
+    margin-top: -0.5rem;
+}
+
+.fixpart {
+    position: sticky; /* 고정 */
+    top: 0; /* 페이지 맨 위에 고정 */
+    z-index: 1000; /* 다른 요소 위로 표시 */
+    background: white; /* 배경색 설정 (스크롤 시 깔끔하게 보이도록) */
+}
+/* home.css 일부*/
+
+#erId, #modelNm, #otherModelNm, #manufacturer, #otherManufacturer, #installDe,
+#displayRes, #routeMapRes, #adAreaRes, #useTp, #statCd, #vehId, #unitPrice {
+    /* width: 90%; */
+    height: 2.25rem;
+    padding: auto;
+    font-size: 15pt;
+    border-radius: 10px;
+    color: var(--sejong-pink);
+    outline: none;
+    text-align: center;
+    font-family: "sejongFont", sans-serif;
+}
+
+#modelNm, #manufacturer, #installDe, #displayRes, #routeMapRes, #adAreaRes, #useTp, #statCd, #vehId {
+    cursor: pointer;
+}
+
+#unitPrice {
+    text-align: center;
+    width: 50%;
+}
+
+
+#erId, tr input[type="text"]::placeholder {
+    color: var(--sejong-pink);
+    font-weight: bold;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 4rem;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: 20%;
+}
+.custom-btn {
+  width: 15rem;
+  height: 3rem;
+  font-size: 1.1rem;
+}
+
+.custom-btn, .custom-btn-1 {
+    color: #fff;
+    border-radius: 5px;
+    padding: auto;
+    font-weight: 500;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow:inset 2px 2px 2px 0px rgba(255,255,255,.5),
+     7px 7px 20px 0px rgba(0,0,0,.1),
+     4px 4px 5px 0px rgba(0,0,0,.1);
+    outline: none;
+    /* margin: 10px; */
+}
+
+.custom-btn-1.btn-2 {
+  width: 60px !important;
+  height: 35px !important;
+  margin-left: 1%;
+}
+
+.btn-2 {
+    background: var(--sejong-purple);
+    border: none;
+}
+
+.btn-2:before {
+    height: 0%;
+    width: 2px;
+}
+
+.btn-2:hover {
+    box-shadow:  4px 4px 6px 0 rgba(255,255,255,.5),
+                -4px -4px 6px 0 rgba(116, 125, 136, .5), 
+      inset -4px -4px 6px 0 rgba(255,255,255,.2),
+      inset 4px 4px 6px 0 rgba(0, 0, 0, .4);
+}
+
+/* Datepicker 버튼 */
+.ui-datepicker-trigger {
+    width: 28px;
+    position: absolute;
+    top: 25%;
+    right: 10px;  /* 위치 조정 */
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* 선택된 날짜 스타일 */
+.flatpickr-day.selected {
+    background-color: var(--sejong-pink);
+    color: #fff;
+}
+
+/* hover 시 날짜 스타일 */
+.flatpickr-day:hover {
+    background-color: var(--sejong-pink);
+    color: #fff;
+}
+
+/* flatpickr 오늘 날짜 강조 */
+.flatpickr-day .today {
+    background-color: var(--sejong-pink);
+    color: #fff;
+}
+
+/* flatpickr 달력 버튼(이전/다음) 스타일 */
+.flatpickr-prev-month:hover, .flatpickr-next-month:hover {
+    background-color: var(--sejong-pink);
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+}
+
+/* 반응형 디자인: 작은 화면 대응 */
+@media (max-width: 100vw) {
+    body{
+      overflow-x: auto; 
+      white-space: nowrap;
+    }
+    .container{
+        min-width: auto;
+    }
+    h1{
+        font-size: 5vw;
+        white-space: nowrap;
+    }
+/* 
+    .custom-btn{
+        width: 30%;
+    } */
+}
+
+label {
+    font-weight: bold;
+    margin-left: 1rem;
+    font-size: 20pt;
+}
+form.div{
+    margin-top: 2%;
+}
+.facilityId {
+    margin-top: 2rem;
+}
+
+form#erouteForm {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+form#erouteForm > div {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+form .left-form label {
+  display: inline-block;
+  width: 120px; 
+  text-align: left;
+  margin-right: 1rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+form .right-form label {
+    display: inline-block;
+    width: 200px;
+    text-align: left;
+    font-weight: bold;
+    white-space: nowrap;
+    margin-right: 1rem;
+}
+
+form#erouteForm input,
+form#erouteForm select {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  width: 50%;
+  min-width: 380px;
+  margin-top: 2rem;
+  border: 1px solid #121212;
+} 
+
+.main {
+  display: flex;
+  width: 100%;
+}
+
+.flex-form-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 2rem;
+    max-width: 500px;
+} 
+
+.left-form {
+    margin-left: 1rem;
+}
+
+.left-form, .right-form {
+    flex: 1;
+}
+
+.right-form {
+    /*display: none;*/
+    flex-direction: column;
+    margin-left: 150px;
+    margin-top: 20%;
+} 
+
+.right-form.show {
+    display: flex;
+    flex-direction: column;
+}
+
+.custom-btn-1.btn-2 {
+  height: 2.25rem !important;
+  line-height: 2.25rem;
+  padding: 0 0.75rem;
+  font-size: 14pt;
+}
+
+.unit {
+    font-weight: bold; 
+    font-size: 15pt;
+}
+

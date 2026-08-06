@@ -1,0 +1,10 @@
+#dynamicMenuList ul.sub-menu {
+	transition: all 0.3s ease;
+	padding-left: 1rem;
+}
+
+ul.sub-menu {
+	padding-left: 15px;
+	margin: 0;
+	list-style: circle;
+}

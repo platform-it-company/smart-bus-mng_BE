@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  resources/egovframework/mappers/AuthMapper.xml -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.smartbusmng.mapper.AuthMapper">
+
+	<select id="findUserByEmail" parameterType="String" resultType="egovframework.smartbusmng.model.member.UserDto">
+		Select A.user_email As userEmail,
+			A.user_id AS userId,
+			A.password As password, 
+			A.user_name As username,
+			A.group_id As groupId,
+			A.group_role As groupRole,
+			B.group_nm As groupName
+		FROM smartbusmngdb.sbm_operator_user A
+		JOIN smartbusmngdb.sbm_operator B
+		WHERE A.user_email = #{userEmail} and A.confirmed_user = 'Y' and A.group_id = B.group_id and A.withdraw_yn = 'N'
+	</select>
+</mapper>

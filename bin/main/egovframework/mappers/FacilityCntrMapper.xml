@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  resources/egovframework/mappers/FacilityCntrMapper.xml -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.smartbusmng.mapper.FacilityCntrMapper">
+
+    <!-- inflight req 조회 -->
+	<select id="selectInflightReqIdsByFacilityIds" parameterType="map" resultType="long">
+		SELECT DISTINCT req_id
+		FROM smartbusmngdb.sbm_facility_cmd_target
+		WHERE facility_id IN
+			<foreach collection="facilityIds" item="fid" open="(" separator="," close=")">
+				#{fid}
+			</foreach>
+			AND target_status IN ('PENDING','SENDING','SENT','RETRY')
+	</select>
+	
+    <!-- 최신만 유지 -->
+    <update id="cancelInflightTargetsByFacilityIds" parameterType="map">
+        UPDATE smartbusmngdb.sbm_facility_cmd_target
+        SET
+			target_status = 'CANCELED',
+			last_error = 'canceled_by_new_request',
+			next_retry_dt = NULL,
+            worker_id = NULL,
+            picked_dt = NULL,
+			last_updt_dt = CURRENT_TIMESTAMP
+        WHERE facility_id IN
+            <foreach collection="facilityIds" item="fid" open="(" separator="," close=")">
+                #{fid}
+            </foreach>
+            AND target_status IN ('PENDING','SENDING','RETRY')
+    </update>
+
+    <!-- req 생성 -->
+	<insert id="insertCmdReq"
+			parameterType="egovframework.smartbusmng.model.facilityCntr.CmdReqParam"
+			useGeneratedKeys="true" keyProperty="reqId" keyColumn="req_id">
+	    INSERT INTO smartbusmngdb.sbm_facility_cmd_req
+		(
+			request_id, cmd_tp, cmd_msg, qos, retain_yn, status,
+			total_targets, sent_cnt, ack_ok_cnt, ack_fail_cnt,
+			frst_regist_dt, frst_user_id, frst_regist_tool
+		)
+	    VALUES
+		(
+			#{requestId}, #{cmdTp}, #{cmdMsg}, #{qos}, #{retainYn}, 'CREATED',
+			#{totalTargets}, 0, 0, 0,
+			CURRENT_TIMESTAMP, #{userId}, #{tool}
+			)
+	</insert>
+  
+    <!-- target 생성 -->
+	<insert id="insertCmdTarget"
+			parameterType="egovframework.smartbusmng.model.facilityCntr.CmdTargetParam"
+			useGeneratedKeys="true" keyProperty="targetId" keyColumn="target_id">
+		INSERT INTO smartbusmngdb.sbm_facility_cmd_target
+		(
+			req_id, facility_id, msg_id, cmd_tp, cmd_msg, target_status,
+			retry_cnt, frst_regist_dt, frst_user_id, frst_regist_tool, last_updt_dt
+		)
+	    VALUES
+		(
+			#{reqId}, #{facilityId}, NULL, #{cmdTp}, #{cmdMsg}, 'PENDING',
+			0, CURRENT_TIMESTAMP, #{userId}, #{tool}, CURRENT_TIMESTAMP
+		)
+	</insert>
+	
+    <!-- msg_id = target_id -->
+	<update id="updateTargetMsgId" parameterType="map">
+	    UPDATE smartbusmngdb.sbm_facility_cmd_target
+	    SET
+            msg_id = #{msgId},
+            last_updt_dt = CURRENT_TIMESTAMP
+	    WHERE target_id = #{targetId}
+	</update>
+
+    <!-- 긴급 메시지 로그 -->
+	<insert id="insertEmerMsgLog" parameterType="map">
+		INSERT INTO smartbusmngdb.sbm_facility_emermsg
+		(
+			target_id, facility_id, emergency_msg, frst_regist_dt, frst_user_id, frst_regist_tool
+		)
+		VALUES
+		(
+			#{targetId}, #{facilityId}, #{emergencyMsg}, CURRENT_TIMESTAMP, #{userId}, #{tool}
+		)
+	</insert>
+	
+    <!-- repair용 전체 재계산 -->
+	<update id="recalcReqAgg" parameterType="map">
+	    UPDATE smartbusmngdb.sbm_facility_cmd_req r
+	    JOIN (
+	        SELECT
+	            req_id,
+	            COUNT(*) AS total_targets,
+		        SUM(
+					CASE
+						WHEN publish_dt IS NOT NULL
+							OR target_status IN ('SENT','ACK_OK','ACK_FAIL','DEAD','EXPIRED')
+						THEN 1 ELSE 0
+					END
+				) AS sent_cnt,
+		        SUM(CASE WHEN target_status = 'ACK_OK' THEN 1 ELSE 0 END) AS ack_ok_cnt,
+		        SUM(CASE WHEN target_status = 'ACK_FAIL' THEN 1 ELSE 0 END) AS ack_fail_cnt
+	        FROM smartbusmngdb.sbm_facility_cmd_target
+	        WHERE req_id = #{reqId}
+	        GROUP BY req_id
+	    ) x ON r.req_id = x.req_id
+	    SET
+   	    	r.total_targets = x.total_targets,
+	        r.sent_cnt = x.sent_cnt,
+	        r.ack_ok_cnt = x.ack_ok_cnt,
+	        r.ack_fail_cnt = x.ack_fail_cnt
+	    WHERE r.req_id = #{reqId}
+	</update>
+
+    <!-- 배치 claim -->
+    <update id="claimTargetsBatch" parameterType="map">
+	    UPDATE smartbusmngdb.sbm_facility_cmd_target
+	    SET
+	        target_status = 'SENDING',
+	        worker_id = #{workerId},
+	        picked_dt = NOW(),
+	        last_updt_dt = NOW()
+	    WHERE target_id IN (
+	        SELECT y.target_id
+	        FROM (
+	            SELECT t.target_id
+	            FROM smartbusmngdb.sbm_facility_cmd_target t
+	            WHERE
+	            (
+	                t.target_status = 'PENDING'
+	                OR (
+                        t.target_status = 'RETRY'
+                        AND (t.next_retry_dt IS NULL OR t.next_retry_dt &lt;= NOW())
+                    )
+	            )
+	            AND (
+	                t.worker_id IS NULL
+	                OR t.picked_dt IS NULL
+	                OR t.picked_dt &lt; DATE_SUB(NOW(), INTERVAL #{stuckSec} SECOND)
+	            )
+	            ORDER BY t.target_id ASC
+	            LIMIT #{batchSize}
+	        ) y
+	    )
+	</update>
+
+    <!-- 내가 잡은 batch 조회 -->
+	<select id="selectPickedTargets" parameterType="map"
+	        resultType="egovframework.smartbusmng.model.facilityCntr.CmdTargetRow">
+		SELECT
+		    t.target_id    	AS targetId,
+		    t.req_id       	AS reqId,
+		    t.facility_id  	AS facilityId,
+		    t.msg_id       	AS msgId,
+		    t.cmd_tp       	AS cmdTp,
+		    t.cmd_msg      	AS cmdMsg,
+
+		    r.retain_yn    	AS retainYn,
+		    r.qos		   	AS qos,
+		    
+		    t.target_status AS targetStatus,
+		    t.publish_dt	AS publishDt,
+            t.ack_dt        AS ackDt,
+            t.ack_code      AS ackCode,
+            t.ack_msg       AS ackMsg,
+		    t.retry_cnt     AS retryCnt,
+		    t.next_retry_dt AS nextRetryDt,
+		    t.worker_id     AS workerId,
+		    t.picked_dt     AS pickedDt,
+		    t.last_error    AS lastError
+		FROM smartbusmngdb.sbm_facility_cmd_target t
+		JOIN smartbusmngdb.sbm_facility_cmd_req r ON r.req_id = t.req_id
+		WHERE t.worker_id = #{workerId}
+			AND t.target_status = 'SENDING'
+        ORDER BY t.picked_dt ASC, t.target_id ASC
+        LIMIT #{limit}
+	</select>
+
+    <!-- picked 비어 있으면 해제 -->
+    <update id="releasePickedByWorker" parameterType="map">
+        UPDATE smartbusmngdb.sbm_facility_cmd_target
+        SET
+            target_status = 'RETRY',
+            next_retry_dt = DATE_ADD(NOW(), INTERVAL #{nextDelaySec} SECOND),
+            last_error = #{error},
+            worker_id = NULL,
+            picked_dt = NULL,
+            last_updt_dt = NOW()
+        WHERE target_status = 'SENDING'
+            AND worker_id = #{workerId}
+    </update>
+    <!-- 발행 성공 -->
+	<update id="markSent" parameterType="map">
+		UPDATE smartbusmngdb.sbm_facility_cmd_target
+		SET
+			target_status = 'SENT',
+			publish_dt = NOW(),
+			last_error = NULL,
+		    worker_id = NULL,
+		    picked_dt = NULL,
+		    last_updt_dt = NOW()
+		WHERE target_id = #{targetId}
+            AND target_status = 'SENDING'
+            AND worker_id = #{workerId}
+    </update>
+
+    <!-- 발행 실패 -->
+    <update id="markRetry" parameterType="map">
+		UPDATE smartbusmngdb.sbm_facility_cmd_target
+		SET
+		    retry_cnt = retry_cnt + 1,
+			target_status = CASE
+				WHEN (retry_cnt + 1) &gt; #{maxRetry} THEN 'DEAD'
+		    	ELSE 'RETRY'
+		    END,
+		    next_retry_dt = DATE_ADD(NOW(), INTERVAL #{nextDelaySec} SECOND),
+		    last_error = #{error},
+		    worker_id = NULL,
+		    picked_dt = NULL,
+            last_updt_dt = NOW()
+		WHERE target_id = #{targetId}
+            AND target_status = 'SENDING'
+            AND worker_id = #{workerId}
+	</update>
+
+    <!-- msgId로 target 조회 -->
+    <select id="selectTargetByMsgId" parameterType="map"
+            resultType="egovframework.smartbusmng.model.facilityCntr.CmdTargetRow">
+        SELECT
+            target_id      AS targetId,
+            req_id         AS reqId,
+            facility_id    AS facilityId,
+            msg_id         AS msgId,
+            cmd_tp         AS cmdTp,
+            cmd_msg        AS cmdMsg,
+            target_status  AS targetStatus,
+            publish_dt     AS publishDt,
+            ack_dt         AS ackDt,
+            ack_code       AS ackCode,
+            ack_msg        AS ackMsg,
+            retry_cnt      AS retryCnt,
+            next_retry_dt  AS nextRetryDt,
+            worker_id      AS workerId,
+            picked_dt      AS pickedDt,
+            last_error     AS lastError
+        FROM smartbusmngdb.sbm_facility_cmd_target
+        WHERE msg_id = #{msgId}
+        LIMIT 1
+    </select>
+
+    <!-- ACK 반영: 중복 ACK 방지 -->
+    <update id="applyAckByMsgId" parameterType="map">
+        UPDATE smartbusmngdb.sbm_facility_cmd_target
+        SET
+            ack_dt = CURRENT_TIMESTAMP,
+            target_status = CASE
+                WHEN #{ok} = 1 THEN 'ACK_OK'
+                ELSE 'ACK_FAIL'
+            END,
+            ack_code = #{ackCode},
+            ack_msg  = #{ackMsg},
+            last_updt_dt = CURRENT_TIMESTAMP
+        WHERE msg_id = #{msgId}
+          AND ack_dt IS NULL
+          AND target_status = 'SENT'
+    </update>
+
+    <!-- req sent +1 -->
+    <update id="incReqSentCnt" parameterType="map">
+        UPDATE smartbusmngdb.sbm_facility_cmd_req
+        SET
+            sent_cnt = sent_cnt + 1
+        WHERE req_id = #{reqId}
+    </update>
+
+    <!-- req ack_ok +1 -->
+    <update id="incReqAckOkCnt" parameterType="map">
+        UPDATE smartbusmngdb.sbm_facility_cmd_req
+        SET
+            ack_ok_cnt = ack_ok_cnt + 1
+        WHERE req_id = #{reqId}
+    </update>
+
+    <!-- req ack_fail +1 -->
+    <update id="incReqAckFailCnt" parameterType="map">
+        UPDATE smartbusmngdb.sbm_facility_cmd_req
+        SET
+            ack_fail_cnt = ack_fail_cnt + 1
+        WHERE req_id = #{reqId}
+    </update>
+
+    <!-- 요청 1건 조회 -->
+    <select id="selectReqById" parameterType="map"
+            resultType="egovframework.smartbusmng.model.facilityCntr.CmdReqRow">
+        SELECT
+            req_id           AS reqId,
+            request_id       AS requestId,
+            cmd_tp           AS cmdTp,
+            cmd_msg          AS cmdMsg,
+            qos              AS qos,
+            retain_yn        AS retainYn,
+            status           AS status,
+            total_targets    AS totalTargets,
+            sent_cnt         AS sentCnt,
+            ack_ok_cnt       AS ackOkCnt,
+            ack_fail_cnt     AS ackFailCnt,
+            frst_regist_dt   AS frstRegistDt,
+            frst_user_id     AS frstUserId,
+            frst_regist_tool AS frstRegistTool
+        FROM smartbusmngdb.sbm_facility_cmd_req
+        WHERE req_id = #{reqId}
+    </select>
+
+    <!-- 요청에 속한 대상들 조회 -->
+    <select id="selectTargetsByReqId" parameterType="map"
+            resultType="egovframework.smartbusmng.model.facilityCntr.CmdTargetRow">
+        SELECT
+            t.target_id      AS targetId,
+            t.req_id         AS reqId,
+            t.facility_id    AS facilityId,
+            t.msg_id         AS msgId,
+            t.cmd_tp         AS cmdTp,
+            t.cmd_msg        AS cmdMsg,
+
+            r.retain_yn      AS retainYn,
+            r.qos            AS qos,
+
+            t.target_status  AS targetStatus,
+            t.publish_dt     AS publishDt,
+            t.ack_dt         AS ackDt,
+            t.ack_code       AS ackCode,
+            t.ack_msg        AS ackMsg,
+            t.retry_cnt      AS retryCnt,
+            t.next_retry_dt  AS nextRetryDt,
+            t.worker_id      AS workerId,
+            t.picked_dt      AS pickedDt,
+            t.last_error     AS lastError
+        FROM smartbusmngdb.sbm_facility_cmd_target t
+        JOIN smartbusmngdb.sbm_facility_cmd_req r
+          ON r.req_id = t.req_id
+        WHERE t.req_id = #{reqId}
+        ORDER BY t.target_id ASC
+    </select>
+</mapper>

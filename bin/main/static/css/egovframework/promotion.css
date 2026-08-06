@@ -1,0 +1,260 @@
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+header {
+    width: 20rem;
+    padding: 20px;
+}
+
+header a{
+    text-decoration: none;
+    color: black;
+}
+
+.container {
+    display: flex;
+}
+
+.present, .past, .future {
+    text-align: center;
+    margin-top: 3.125rem;
+    margin-left: 1rem;
+    display: inline-block;
+    width: 12rem;
+    height: 5rem;
+    border: solid 1px black;
+    border-radius: 10px;
+}
+
+.present p, .past p, .future p {
+    padding-top: 0.5rem;
+    font-size: 20pt;
+}
+
+.present, .past, .future {
+    position: relative; /* 모달의 위치를 기준으로 잡기 위해 상대 위치 설정 */
+    display: inline-block;
+    box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.5);
+}
+
+.present .modal, .past .modal, .future .modal {
+  display: none; 
+  position: absolute;
+  top: 100%;
+  left: 45%;
+  transform: translateX(-64%);
+  width: 340px; 
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  margin-top: 1rem;
+}
+
+.present:hover .modal, .past:hover .modal, .future:hover .modal {
+  display: block;
+}
+
+.news, .poster, .video, .anyType {
+    text-align: center;
+    display: inline-block;
+    width: 5rem;
+    height: 3rem;
+    border: solid 1px black;
+    border-radius: 10%;
+    font-size: 8pt;
+    font-weight: 200;
+}
+
+.news p, .poster p, .video p, .anyType p {
+    font-size: 15pt;
+    /* font-weight: 100; */
+    margin-top: -0.5rem;
+}
+ 
+section h1{
+    display: inline-block;
+    font-size: 50px;
+    text-decoration: underline;
+    margin-left: 1rem;
+}
+
+.system-status{
+    margin-left: 40rem;
+}
+
+.text-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+select{
+    font-family: 'sejongFont', sans-serif;
+}
+
+label {
+    font-weight: 600;
+    font-size: 15pt; /* 상대 단위 사용 */
+    margin-left: 1rem;
+}
+
+#ad_type, #ad_period, #ad_used {
+    max-width: 11rem; 
+    height: 2.25rem;
+    padding: auto;
+    font-size: 15pt;
+    border: 1px solid #121212;
+    border-radius: 10px;
+    font-family: 'sejongFont', sans-serif;
+    color: var(--sejong-pink);
+    text-align: center;
+    position: relative;
+    z-index: 1; 
+}
+
+#ad_type::after, #ad_period::after, #ad_used::after {
+    content: '▼';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#ad_type:focus, #ad_period:focus, #ad_used:focus {
+    color: var(--sejong-pink);
+    outline: none;
+}
+
+.custom-btn1{
+    margin-left: 5px;
+}
+
+.custom-btn2 {
+    width: 9rem;
+    height: 2rem;
+    color: #fff;
+    border-radius: 5px;
+    padding: auto;
+    font-weight: 500;
+    background: var(--sejong-pink);
+    cursor: pointer;
+    transition: all 0.3s ease;
+     box-shadow:inset 2px 2px 2px 0px rgba(255,255,255,.5),
+     7px 7px 20px 0px rgba(0,0,0,.1),
+     4px 4px 5px 0px rgba(0,0,0,.1);
+    outline: none;
+}
+
+.ellipsis{
+    display: block;
+    max-width: 30ch;
+}
+
+.buttonGroup{
+    display: flex;
+    justify-content: flex-end; 
+    gap: 10px;
+    width: 100%;
+    margin-right: 2.5rem;
+}
+
+#table-body{
+    max-height: 600px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    margin-right: 1rem;
+    width: 100%;
+}
+
+table td, table th {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid darkgray;
+}
+
+table tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+table tbody tr:hover {
+    background-color: darkgray; 
+}
+
+td input[type="checkbox"] {
+    display: block;
+    margin: 0 auto;
+}
+
+#table-container tbody::-webkit-scrollbar {
+    width: 1px; 
+}
+
+#table-container tbody::-webkit-scrollbar-thumb {
+    background: var(--sejong-purple); 
+    border-radius: 8px;
+}
+
+#table-container thead,
+#table-container tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+#table-container th,
+#table-container td {
+    border: 1px solid darkgray;
+    text-align: center;
+    padding: 8px;
+}
+
+#table-container thead th {
+    background-color: #f2f2f2;
+    position: sticky;
+    top: 0; 
+    z-index: 10; 
+}
+
+#table-container tbody {
+    display: block;
+    max-height: 600px; 
+    overflow-x: hidden; 
+}
+
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+}
+
+.promotion-name{
+    text-align: left;
+}
+
+.pagination{
+    margin-top: -1rem;
+}
+
+@media (max-width: 100vw) {
+    body{
+      overflow-x: auto; 
+      /* flex-direction: row; */
+      white-space: nowrap;
+    }
+    .container{
+        min-width: auto;
+    }
+    h1{
+        font-size: 5vw; /* 반응형 글씨 크기 */
+        white-space: nowrap; /* 줄바꿈 방지 */
+    }
+}

@@ -1,0 +1,130 @@
+table {
+    width: 90%;
+    margin-left: 2.5rem;
+    margin-top: 1rem;
+    font-size: 15pt;
+    font-weight: 600;   
+}
+
+#erId, #modelNm, #otherModelNm, #manufacturer, #otherManufacturer, #installDe, 
+#displayRes, #routeMapRes, #adAreaRes, #useTp, #statCd, #vehId, #unitPrice {
+    width: 90%;
+    height: 2.25rem;
+    padding: auto;
+    font-size: 15pt;
+    border-radius: 10px;
+    color: var(--sejong-pink);
+    outline: none;
+    border: 1px solid #121212;
+    text-align: center;
+    font-family: "sejongFont", sans-serif;
+}
+
+#modelNm, #manufacturer, #installDe, #displayRes, #routeMapRes, #adAreaRes, 
+#useTp, #statCd, #vehId {
+    cursor: pointer;
+}
+
+td {
+   padding-top: 0.5rem;
+}
+
+#erId, tr input[type="text"]::placeholder {
+    color: var(--sejong-pink);
+    font-weight: bold;
+}
+
+.buttonGroup{
+
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.custom-btn {
+    width: 15rem;
+    height: 3rem;
+    color: #fff;
+    border-radius: 5px;
+    padding: auto;
+    font-weight: 500;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+     box-shadow:inset 2px 2px 2px 0px rgba(255,255,255,.5),
+     7px 7px 20px 0px rgba(0,0,0,.1),
+     4px 4px 5px 0px rgba(0,0,0,.1);
+    outline: none;
+    margin: 10px;
+}
+
+.btn-2 {
+    background: var(--sejong-purple);
+    border: none;
+}
+
+.btn-2:before {
+    height: 0%;
+    width: 2px;
+}
+
+.btn-2:hover {
+    box-shadow:  4px 4px 6px 0 rgba(255,255,255,.5),
+                -4px -4px 6px 0 rgba(116, 125, 136, .5), 
+      inset -4px -4px 6px 0 rgba(255,255,255,.2),
+      inset 4px 4px 6px 0 rgba(0, 0, 0, .4);
+}
+
+/* Datepicker 버튼 */
+.ui-datepicker-trigger {
+    width: 28px;
+    position: absolute;
+    top: 25%;
+    right: 10px;  /* 위치 조정 */
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* 선택된 날짜 스타일 */
+.flatpickr-day.selected {
+    background-color: var(--sejong-pink);
+    color: #fff;
+}
+
+/* hover 시 날짜 스타일 */
+.flatpickr-day:hover {
+    background-color: var(--sejong-pink);
+    color: #fff;
+}
+
+/* flatpickr 오늘 날짜 강조 */
+.flatpickr-day .today {
+    background-color: var(--sejong-pink);
+    color: #fff;
+}
+
+/* flatpickr 달력 버튼(이전/다음) 스타일 */
+.flatpickr-prev-month:hover, .flatpickr-next-month:hover {
+    background-color: var(--sejong-pink);
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+}
+
+/* 반응형 디자인: 작은 화면 대응 */
+@media (max-width: 768px) {
+    .buttonGroup{
+        position: sticky;
+        /* z-index: 1000; */
+    }
+    h2{
+        white-space: nowrap;
+        position: sticky;
+    }
+    table {
+        border-collapse: collapse;
+        overflow-x: auto; 
+        white-space: nowrap;
+    }
+}
