@@ -1,1 +1,11 @@
 .env
+.env
+/.classpath
+/.project
+/.factorypath
+/.gradle/
+/build/
+/.settings/
+/.metadata/
+/bin/
+/target/
