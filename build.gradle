@@ -52,8 +52,8 @@ dependencies {
 	
 	// Database
 	//implementation 'org.hsqldb:hsqldb:2.7.3'
-	implementation 'com.mysql:mysql-connector-j:9.1.0'
-	//implementation 'org.mariadb.jdbc:mariadb-java-client:3.4.1'
+	//implementation 'com.mysql:mysql-connector-j:9.1.0'
+	implementation 'org.mariadb.jdbc:mariadb-java-client:3.4.1'
 	
 	//docker사용시 활성화
 	//runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.4.1'
