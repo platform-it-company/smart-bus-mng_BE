@@ -55,7 +55,7 @@ public class FacilityController {
 		
 		final String userRole = SecurityUtil.getGroupRole();
 		
-		if ("ADMIN".equals(userRole) && (userGroupId == "" || userGroupId.isEmpty())) {
+		if ("ADMIN".equals(userRole) && (userGroupId == null || userGroupId.isBlank())) {
 			userGroupId = null;
 		}
 
@@ -72,17 +72,17 @@ public class FacilityController {
 	@GetMapping("/searchEr")
 	@ResponseBody
 	public ResponseEntity<List<FacilityVehInfoDto>> searchFacilityList(
-			@RequestParam(required = false, defaultValue="0") String selRouteId,
-			@RequestParam(required = false, defaultValue="0") int selRouteVer,
-			@RequestParam(required = false, defaultValue="0") int selVehId,
-			@RequestParam(required = false, defaultValue="99999") int selState,
-			@RequestParam(required = false, defaultValue="0") int viewType,
-			@RequestParam(required = false, defaultValue="Y") String useTp,
-			@RequestParam(required = false) String userGroupId
+			@RequestParam(name="selRouteId", required = false, defaultValue="0") String selRouteId,
+			@RequestParam(name="selRouteVer", required = false, defaultValue="0") int selRouteVer,
+			@RequestParam(name="selVehId", required = false, defaultValue="0") int selVehId,
+			@RequestParam(name="selState", required = false, defaultValue="99999") int selState,
+			@RequestParam(name="viewType", required = false, defaultValue="0") int viewType,
+			@RequestParam(name="useTp", required = false, defaultValue="Y") String useTp,
+			@RequestParam(name="userGroupId", required = false) String userGroupId
 	) {
 		String userRole = SecurityUtil.getGroupRole();
 
-		if ("ADMIN".equals(userRole) && (userGroupId == "" || userGroupId.isEmpty())) {
+		if ("ADMIN".equals(userRole) && (userGroupId == null || userGroupId.isBlank())) {
 			userGroupId = null;
 		}
 		
@@ -97,7 +97,7 @@ public class FacilityController {
 	public ResponseEntity<?> saveFacility(
 //		@ModelAttribute FacilityDto dto,
 		@RequestBody FacilityDto dto,
-		@RequestParam(required = false) String userGroupId
+		@RequestParam(name="userGroupId", required = false) String userGroupId
 	) {
 		
 		System.out.println("facilityId = " + dto.getFacilityId());
@@ -184,7 +184,7 @@ public class FacilityController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증이 필요합니다.");
         }
         
-		if ("ADMIN".equals(userRole) && (userGroupId == "" || userGroupId.isEmpty())) {
+		if ("ADMIN".equals(userRole) && (userGroupId == null || userGroupId.isBlank())) {
 			userGroupId = null;
 		}
 
@@ -258,15 +258,15 @@ public class FacilityController {
     @GetMapping("/products/models")
     public List<ModelDto> modelsByManufacturer(
         @RequestParam("manufacturer") String manufacturer,
-        @RequestParam(required = false) String groupId
+        @RequestParam(name="groupId", required = false) String groupId
     ) {
         String gId = (groupId != null && !groupId.isBlank()) ? groupId : SecurityUtil.getGroupId();
         return facilityService.getModelsByManufacturer(gId, manufacturer);
     }
     
     @PostMapping("/products/getModelDetail")
-    public ModelSpecDto getModelDetail(@RequestParam String modelId, 
-    		@RequestParam(required = false) String groupId) {
+    public ModelSpecDto getModelDetail(@RequestParam(name="modelId") String modelId, 
+    		@RequestParam(name="groupId", required = false) String groupId) {
     	String gId = (groupId != null && !groupId.isBlank()) ? groupId : SecurityUtil.getGroupId();
     	return facilityService.getModelDetail(gId, modelId);
     }

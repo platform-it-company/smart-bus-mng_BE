@@ -38,8 +38,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/login", "/api/register", "/api/checkEmail", "/api/checkGroupKey", "/api/login/groups").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**","/swagger-resources/**","/webjars/**").permitAll() // 나중에 swagger 지울 때 이곳 활성화
-                        .requestMatchers("/api/notice/**").permitAll() //나중에 swagger 지울 때 이곳 활성화
+                        // .requestMatchers("/swagger-ui/**", "/v3/api-docs/**","/swagger-resources/**","/webjars/**").permitAll() // 나중에 swagger 지울 때 이곳 활성화
+                        // .requestMatchers("/api/notice/**").permitAll() //나중에 swagger 지울 때 이곳 활성화
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -80,8 +80,9 @@ public class SecurityConfig {
 //        c.setExposedHeaders(List.of("Set-Cookie"));
         c.setAllowedOriginPatterns(List.of(
 		  "http://localhost:5173",
-		  "http://10.10.10.77:5173",
-		  "http://10.10.10.*:5173"
+		  "http://10.10.10.112:5173",
+		  "http://10.10.10.*:5173",
+                  "http://localhost:8081"
 		));
         c.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         c.setAllowedHeaders(List.of("*"));

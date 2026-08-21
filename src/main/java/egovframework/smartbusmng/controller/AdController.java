@@ -58,7 +58,7 @@ public class AdController {
 	@GetMapping("")
 	public ResponseEntity<Map<String, Object>> getAds(@RequestParam(value = "page", defaultValue = "1") int page,
 			@RequestParam(value = "size", defaultValue = DEFAULT_PAGE_SIZE) int size,
-			@RequestParam(value = "userGroupId", required = false) String userGroupId) {
+			@RequestParam(name="userGroupId", value = "userGroupId", required = false) String userGroupId) {
 
 		// 1) 원래 컨트롤러에서 하던 통계
 		int adCount = adService.getAdCount("all", "totalAd", userGroupId);
@@ -126,8 +126,8 @@ public class AdController {
 	 * 단건 조회 GET /api/eroute/ads/{adId}
 	 */
 	@GetMapping("/ad/{adId}")
-	public ResponseEntity<Map<String, Object>> getAd(@PathVariable String adId, 
-			@RequestParam(value = "userGroupId", required = false) String userGroupId) {
+	public ResponseEntity<Map<String, Object>> getAd(@PathVariable (name="adId") String adId, 
+			@RequestParam(name="userGroupId", value = "userGroupId", required = false) String userGroupId) {
 		System.out.println("==================userGroupId:"+ userGroupId);
 		Ad ad = adService.getAdById(adId, userGroupId);
 		if (ad == null) {
@@ -209,9 +209,9 @@ public class AdController {
 	public ResponseEntity<Map<String, Object>> saveAd(
 			@Valid @ModelAttribute Ad ad, 
 			BindingResult result,
-			@RequestParam(value = "upfile", required = false) MultipartFile upfile,
-			@RequestParam(value = "fPath", required = false) String fPath,
-			@RequestParam(value = "attachId", required = false) String attachId) {
+			@RequestParam(name="upfile", value = "upfile", required = false) MultipartFile upfile,
+			@RequestParam(name="fPath", value = "fPath", required = false) String fPath,
+			@RequestParam(name="attachId", value = "attachId", required = false) String attachId) {
 		Map<String, Object> response = new HashMap<>();
 
 		if (result.hasErrors()) {
@@ -249,11 +249,11 @@ public class AdController {
 
 	@GetMapping("/searchAds")
 	public ResponseEntity<SearchResponse> searchAds(@RequestParam(value = "page", defaultValue = "1") int page,
-			@RequestParam(value = "size", defaultValue = DEFAULT_PAGE_SIZE) int size,
-			@RequestParam(value = "ad_tp", required = false) String ad_tp,
-			@RequestParam(value = "ad_period", required = false) String ad_period,
-			@RequestParam(value = "ad_used", required = false) String ad_used,
-			@RequestParam(value = "userGroupId", required = false) String userGroupId) {
+			@RequestParam(name="size", value = "size", defaultValue = DEFAULT_PAGE_SIZE) int size,
+			@RequestParam(name="ad_tp", value = "ad_tp", required = false) String ad_tp,
+			@RequestParam(name="ad_period", value = "ad_period", required = false) String ad_period,
+			@RequestParam(name="ad_used", value = "ad_used", required = false) String ad_used,
+			@RequestParam(name="userGroupId", value = "userGroupId", required = false) String userGroupId) {
 		
 		String userRole = SecurityUtil.getGroupRole();
 
