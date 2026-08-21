@@ -41,16 +41,16 @@ public class NoticeController {
     @GetMapping("")
     public ResponseEntity<Map<String, Object>> getNoticeList(
             @Parameter(description = "그룹 ID", example = "GROUP001")
-            @RequestParam(value = "groupId", required = false) String groupId,
+            @RequestParam(name="groupId", value = "groupId", required = false) String groupId,
 
             @Parameter(description = "제목 검색 키워드")
-            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(name="keyword", value = "keyword", required = false) String keyword,
 
             @Parameter(description = "페이지 번호", example = "1")
-            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(name="page", value = "page", defaultValue = "1") int page,
 
             @Parameter(description = "페이지 크기", example = "10")
-            @RequestParam(value = "size", defaultValue = "10") int size) {
+            @RequestParam(name="size", value = "size", defaultValue = "10") int size) {
 
         return ResponseEntity.ok(
                 noticeService.getNoticeList(groupId, keyword, page, size)
@@ -63,8 +63,8 @@ public class NoticeController {
     @Operation(summary = "공지사항 상세 조회")
     @GetMapping("/{notiId}")
     public ResponseEntity<?> getNotice(
-            @Parameter(description = "공지 ID") @PathVariable Integer notiId,
-            @Parameter(description = "그룹 ID") @RequestParam String groupId) {
+            @Parameter(name="notiId", description = "공지 ID") @PathVariable (name = "notiId") Integer notiId,
+            @Parameter(name="groupId", description = "그룹 ID") @RequestParam (name="groupId") String groupId) {
 
         Notice notice = noticeService.getNotice(notiId, groupId);
 
@@ -96,8 +96,8 @@ public class NoticeController {
     @Operation(summary = "공지사항 수정")
     @PutMapping("/edit/{notiId}")
     public ResponseEntity<?> editNotice(
-            @Parameter(description = "공지 ID") @PathVariable Integer notiId,
-            @Parameter(description = "그룹 ID") @RequestParam String groupId,
+            @Parameter(name="notiId", description = "공지 ID") @PathVariable (name = "notiId") Integer notiId,
+            @Parameter(name="groupId", description = "그룹 ID") @RequestParam (name="groupId") String groupId,
             @Valid @RequestBody NoticeEditReq req) {
 
         noticeService.updateNotice(notiId, groupId, req);
@@ -111,8 +111,8 @@ public class NoticeController {
     @Operation(summary = "공지사항 삭제")
     @DeleteMapping("/delete/{notiId}")
     public ResponseEntity<?> deleteNotice(
-            @Parameter(description = "공지 ID") @PathVariable Integer notiId,
-            @Parameter(description = "그룹 ID") @RequestParam String groupId) {
+            @Parameter(name="notiId", description = "공지 ID") @PathVariable (name = "notiId") Integer notiId,
+            @Parameter(name="groupId", description = "그룹 ID") @RequestParam (name="groupId") String groupId) {
 
         noticeService.deleteNotice(notiId, groupId);
 

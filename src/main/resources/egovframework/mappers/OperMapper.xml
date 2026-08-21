@@ -212,37 +212,35 @@
 			limit #{size} offset #{offset}			
 	</select>
 	
-		<select id="selectVehicleById" resultType="egovframework.smartbusmng.model.oper.VehicleInfo">
-		select 
-			v.veh_id as vehId,
-			v.veh_no as vehNo,
-			v.group_id as groupId,
-			o.group_nm as groupNm,
-			v.vin,
-			v.maker_nm as makerNm,
-			v.model_nm as modelNm,
-			v.model_year as modelYear,
-			v.fuel_tp as fuelTp,
-			v.euro6_yn as euro6Yn,
-			v.lowfloor_yn as lowfloorYn,
-			v.wheelchair_yn as wheelchairYn,
-			v.passenger_cap as passengerCap,
-			v.junk_tp as junkTp,
-			v.oprat_at as opratAt,
-			v.oprat_tp as opratTp,
-			v.manager_nm as managerNm,
-			v.manager_phone as managerPhone,
-			v.remark
-		from busroutedb.ms_veh v
-		left join smartbusmngdb.sbm_operator o on o.group_id = v.group_id
-		where 1=1
-			<if test="groupId != null and groupId != ''">
-				and v.group_id = #{groupId} 
-			</if>
-			<if test="vehId != null">
-				and v.veh_id = #{vehId}
-			</if>
-	</select>
+		<select
+		    id="selectVehicleById"
+		    resultType="egovframework.smartbusmng.model.oper.VehicleInfo"
+		>
+		    select
+		        v.veh_id as vehId,
+		        v.veh_no as vehNo,
+		        v.group_id as groupId,
+		        o.group_nm as groupNm,
+		        v.vin,
+		        v.maker_nm as makerNm,
+		        v.model_nm as modelNm,
+		        v.model_year as modelYear,
+		        v.fuel_tp as fuelTp,
+		        v.euro6_yn as euro6Yn,
+		        v.lowfloor_yn as lowfloorYn,
+		        v.wheelchair_yn as wheelchairYn,
+		        v.passenger_cap as passengerCap,
+		        v.junk_tp as junkTp,
+		        v.oprat_at as opratAt,
+		        v.oprat_tp as opratTp,
+		        v.manager_nm as managerNm,
+		        v.manager_phone as managerPhone,
+		        v.remark
+		    from busroutedb.ms_veh v
+		    left join smartbusmngdb.sbm_operator o
+		        on o.group_id = v.group_id
+		    where v.veh_id = #{vehId}
+		</select>
 	
 	<update id="incVehSeq">
 		update busroutedb.ms_veh_seq

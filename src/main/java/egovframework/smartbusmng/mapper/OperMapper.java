@@ -65,7 +65,7 @@ public interface OperMapper {
 	int updateVehicle(VehicleInfo dto);
 
 	long countDriversByCond(@Param("groupId") String groupId, @Param("driverName") String driverName,
-		Integer status);
+		@Param("status") Integer status);
 
 	long countPendingList(String groupId);
 

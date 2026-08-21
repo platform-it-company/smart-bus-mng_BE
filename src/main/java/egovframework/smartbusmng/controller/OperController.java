@@ -59,7 +59,7 @@ public class OperController {
 	}
 	
 	@PostMapping("/dispatch/save")
-	public ResponseEntity<?> routeEdit(@RequestParam(value="userGroupId") String userGroupId, 
+	public ResponseEntity<?> routeEdit(@RequestParam(name="userGroupId", value="userGroupId") String userGroupId, 
 			@RequestBody RouteRowDto dto) {
 		ResponseEntity<?> err = validateGroup(userGroupId);
 		if (err != null) return err;
@@ -75,7 +75,7 @@ public class OperController {
 	}
 	
 	@GetMapping("/vehicle/dash")
-	public ResponseEntity<?> vehicleDash(@RequestParam(value="userGroupId") String userGroupId) {
+	public ResponseEntity<?> vehicleDash(@RequestParam(name="userGroupId", value="userGroupId") String userGroupId) {
 		ResponseEntity<?> err = validateGroup(userGroupId);
 		if (err != null) return err;
 		
@@ -91,7 +91,7 @@ public class OperController {
 	}
 
 	@PostMapping("/vehicle/search")
-	public ResponseEntity<?> vehicleSearch(@RequestParam(value="userGroupId") String userGroupId,
+	public ResponseEntity<?> vehicleSearch(@RequestParam(name="userGroupId", value="userGroupId") String userGroupId,
 		@RequestBody VehicleSearchReq req) {
 		ResponseEntity<?> err = validateGroup(userGroupId);
 		if (err != null) return err;
@@ -109,7 +109,7 @@ public class OperController {
 	}
 	
 	@PostMapping("/vehicle/add")
-	public ResponseEntity<?> addVehicle(@RequestParam(value="userGroupId") String userGroupId,
+	public ResponseEntity<?> addVehicle(@RequestParam(name="userGroupId", value="userGroupId") String userGroupId,
 		@RequestBody VehicleInfo dto
 	){
 		ResponseEntity<?> err = validateGroup(userGroupId);
@@ -131,7 +131,7 @@ public class OperController {
 	}
 
 	@GetMapping("/vehicle/edit")
-	public ResponseEntity<?> vehicleView(@RequestParam(value="userGroupId") String userGroupId,
+	public ResponseEntity<?> vehicleView(@RequestParam(name="userGroupId", value="userGroupId") String userGroupId,
 		@RequestParam(value="vehId") int vehId
 	) {
 //		ResponseEntity<?> err = validateGroup(userGroupId);
@@ -146,7 +146,7 @@ public class OperController {
 	}
 	
 	@PostMapping("/vehicle/save")
-	public ResponseEntity<?> vehicleSave(@RequestParam(value="userGroupId") String userGroupId,
+	public ResponseEntity<?> vehicleSave(@RequestParam(name="userGroupId", value="userGroupId") String userGroupId,
 		@RequestBody VehicleInfo dto
 	) {
 		ResponseEntity<?> err = validateGroup(userGroupId);
@@ -165,7 +165,7 @@ public class OperController {
 	}
 
 	@GetMapping("/driver/pendingList")
-	public ResponseEntity<?> driverPending(@RequestParam(value="userGroupId") String userGroupId) {
+	public ResponseEntity<?> driverPending(@RequestParam(name="userGroupId", value="userGroupId") String userGroupId) {
 		ResponseEntity<?> err = validateGroup(userGroupId);
 		if (err != null) return err;
 		
@@ -173,7 +173,7 @@ public class OperController {
 	}
 	
 	@PostMapping("/driver/approve")
-	public ResponseEntity<?> driverApprove(@RequestParam(value="userGroupId") String userGroupId, 
+	public ResponseEntity<?> driverApprove(@RequestParam(name="userGroupId", value="userGroupId") String userGroupId, 
 		@RequestBody long[] driverIds
 	) {
 		ResponseEntity<?> err = validateGroup(userGroupId);
@@ -184,11 +184,11 @@ public class OperController {
 	}
 
 	@GetMapping("/driver/search")
-	public ResponseEntity<?> driverSearch(@RequestParam(value="userGroupId") String userGroupId, 
-	    @RequestParam(required=false) String driverName,
-	    @RequestParam(required=false) Integer status,
-	    @RequestParam(defaultValue="1") int page,
-	    @RequestParam(defaultValue="20") int size) {
+	public ResponseEntity<?> driverSearch(@RequestParam(name="userGroupId", value="userGroupId") String userGroupId, 
+	    @RequestParam(name="driverName", required=false) String driverName,
+	    @RequestParam(name="status", required=false) Integer status,
+	    @RequestParam(name="page", defaultValue="1") int page,
+	    @RequestParam(name="size", defaultValue="20") int size) {
 		ResponseEntity<?> err = validateGroup(userGroupId);
 		if (err != null) return err;
 				

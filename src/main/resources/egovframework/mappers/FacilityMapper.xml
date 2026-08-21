@@ -256,10 +256,10 @@
 	
 	<select id="getBusesInRoute" resultType="egovframework.smartbusmng.model.facility.record.BusesInRoute">
 		SELECT A.VEH_ID, B.VEH_NO, A.ROUTE_ID, A.ROUTE_VER, C.ROUTE_NM, C.ROUTE_DC
-		FROM busroutedb.BMS_PR_VEH_LC A, busroutedb.MS_VEH B, busroutedb.matched_ms_route C
+		FROM busroutedb.bms_pr_veh_lc A, busroutedb.ms_veh B, busroutedb.matched_ms_route C
 		WHERE A.PROVD_DT >= CURDATE()
 			AND A.group_id = #{userGroupId}
-			AND A.group_id = b.group_id
+			AND A.group_id = B.group_id
 			AND A.VEH_ID = B.VEH_ID
 			<if test="selRouteId != 0">
 				AND A.ROUTE_ID = #{selRouteId}
