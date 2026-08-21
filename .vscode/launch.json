@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-EgovBootApplication<egov_smartbusmng-smart-bus-mng_BE>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "egovframework.smartbusmng.EgovBootApplication",
+      "projectName": "egov_smartbusmng-smart-bus-mng_BE",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

@@ -79,9 +79,9 @@ public class SecurityConfig {
 //        c.setAllowedHeaders(List.of("Content-Type", "X-XSRF-TOKEN", "X-Requested-With"));
 //        c.setExposedHeaders(List.of("Set-Cookie"));
         c.setAllowedOriginPatterns(List.of(
-		  "http://localhost:5173",
-		  "http://10.10.10.112:5173",
-		  "http://10.10.10.*:5173",
+		  "http://localhost:5174",
+		  "http://10.10.10.112:5174",
+		  "http://10.10.10.*:5174",
                   "http://localhost:8081"
 		));
         c.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
